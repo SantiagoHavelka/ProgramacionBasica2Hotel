@@ -8,7 +8,7 @@ import clasesHotel.Hotel;
 
 public class TestHotel {
 
-	private Hotel hotel = new Hotel("ElSueño");
+	private Hotel hotel = new Hotel("El Sueño");
 	@Test
 	public void queExistaUnHotel() {
 	assertNotNull(this.hotel);
