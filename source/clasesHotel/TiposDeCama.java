@@ -1,5 +1,5 @@
 package clasesHotel;
 
 public enum TiposDeCama {
-DOBLE, INDIVIDUAL, MATRIMONIAL;
+DOBLE, INDIVIDUAL, MATRIMONIAL, KING_SIZE;
 }
