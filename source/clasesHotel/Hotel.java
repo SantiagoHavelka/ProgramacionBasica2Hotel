@@ -74,7 +74,7 @@ public class Hotel implements HotelInterface {
     }
 	
 	@Override
-    public Boolean cancelarReserva(Cliente cliente, Reserva reserva, ArrayList<Cliente> acompaniantes) {
+    public Boolean cancelarReserva(Cliente cliente, Reserva reserva, List<Cliente> acompaniantes) {
 
         for (ReservaCliente rc : this.reservasClientes) {
             if (rc.getCliente().getId().equals(cliente.getId())

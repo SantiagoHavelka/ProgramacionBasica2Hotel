@@ -1,7 +1,6 @@
 package clasesHotel;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public interface HotelInterface {
@@ -13,5 +12,5 @@ public interface HotelInterface {
 	Boolean modificarReserva(Reserva reserva, LocalDate nuevaFechaLlegada, LocalDate nuevaFechaSalida);
 	List<ReservaCliente> getReservasClientes();
 	List<Habitacion> getHabitaciones();
-	Boolean cancelarReserva(Cliente cliente, Reserva reserva, ArrayList<Cliente> acompaniantes);
+	Boolean cancelarReserva(Cliente cliente, Reserva reserva, List<Cliente> acompaniantes);
 }
