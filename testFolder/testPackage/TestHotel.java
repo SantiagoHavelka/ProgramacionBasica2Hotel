@@ -181,7 +181,7 @@ public class TestHotel {
 	}
 	
 	@Test
-    public void dadoQueHayUnClienteConUnaReservaEsteMismoQuiereModificarSusDiasDeEstadia() {
+    public void queUnClienteQuieraModificarLosDiasDeSuEstadia() {
 		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
         Cliente cliente = this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
         Reserva reserva = this.crearReserva(1, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
@@ -198,7 +198,7 @@ public class TestHotel {
     }
 	
 	@Test
-    public void dadoQueUnClienteModificaReserva_OtroClienteIntentaModificarConFechasDiferentes() {
+    public void queUnClienteQuieraModificarUnaReservaYaExistente() {
 		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
 
         Cliente cliente = this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
@@ -227,7 +227,7 @@ public class TestHotel {
     }
 	
 	@Test
-    public void dadoQueDosClientesTienenReservasDistintas_CuandoUnoCancelaSuReserva_LaReservaSeAnulaCorrectamente() {
+    public void queExistan2ClientesYQueUnoDecidaCancelarSuReserva() {
 		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
 		Habitacion estandar2 = this.crearHabitacionEstandar(37, 3, PRECIO_BASE_HABITACION_POR_DIA, 2, TiposDeCama.INDIVIDUAL, servicio, 5);
 
