@@ -131,9 +131,9 @@ public class TestHotel {
 		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
 		Reserva reserva = this.crearReserva(2, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
 
-		Cliente cliente = new Cliente("Julieta", "Bernacchia", 21, 44511167, 1);
-		Cliente acompaniante1 = new Cliente("Santiago", "Aquino", 23, 42675483, 2);
-		Cliente acompaniante2 = new Cliente("Luca", "Bernacchia", 23, 43309999, 3);
+		Cliente cliente = this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
+		Cliente acompaniante1 = this.crearCliente("Santiago", "Aquino", 23, 42675483, 2);
+		Cliente acompaniante2 =  this.crearCliente("Luca", "Bernacchia", 23, 43309999, 3);
 		ArrayList<Cliente> acompaniantes = new ArrayList<>();
 		acompaniantes.add(acompaniante1);
 		acompaniantes.add(acompaniante2);
@@ -148,6 +148,36 @@ public class TestHotel {
 		assertTrue(reservaCliente.getAcompaniantes().contains(acompaniante2));
 		assertEquals(2, reservaCliente.getAcompaniantes().size());
 		
+	}
+	
+	@Test
+	public void queExistaUnaReservaParaUnClienteEnUnaHabitaciónYFechasEspecíficasPeroQueOtroClienteNoPuedeReservarLaMismaHabitaciónEnLasMismasFechas() {
+		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
+		hotel.agregarHabitacion(estandar);
+
+		Cliente cliente1 =  this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
+		Reserva reserva1 = this.crearReserva(1, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
+		Cliente acompaniante1 =  this.crearCliente("Santiago", "Aquino", 23, 42675483, 2);
+		Cliente acompaniante2 =  this.crearCliente("Luca", "Bernacchia", 23, 43309999, 3);
+		ArrayList<Cliente> acompaniantes = new ArrayList<>();
+		acompaniantes.add(acompaniante1);
+		acompaniantes.add(acompaniante2);
+		hotel.agregarReservaCliente(cliente1, reserva1, acompaniantes);
+
+		Cliente cliente2 =  this.crearCliente("Pedro", "Gomez", 23, 41675483, 2);
+		Cliente acompaniante1DelCliente2 =  this.crearCliente("Maria", "Gonzalez", 25, 42327456, 3);
+		Cliente acompaniante2DelCliente2 =  this.crearCliente("Lucia", "Fernandez", 23, 43128320, 4);
+		Reserva reserva2 = this.crearReserva(2, estandar, LocalDate.of(2024, 5, 30), LocalDate.of(2024, 6, 3));
+		ArrayList<Cliente> acompaniantesDelSegundoCliente = new ArrayList<>();
+		acompaniantesDelSegundoCliente.add(acompaniante1DelCliente2);
+		acompaniantesDelSegundoCliente.add(acompaniante2DelCliente2);
+
+		Boolean seAgregaElSegundoClienteALaMismaReserva = hotel.agregarReservaCliente(cliente2, reserva2,
+				acompaniantesDelSegundoCliente);
+
+		assertFalse(seAgregaElSegundoClienteALaMismaReserva);
+		assertEquals(1, hotel.getReservasClientes().size());
+		assertEquals(1, hotel.getHabitaciones().size());
 	}
 	
 	

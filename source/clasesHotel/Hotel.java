@@ -56,6 +56,10 @@ public class Hotel implements HotelInterface {
 		return reservasClientes;
 	}
 
+	public List<Habitacion> getHabitaciones() {
+		return habitaciones;
+	}
+
 	
 	
 	
