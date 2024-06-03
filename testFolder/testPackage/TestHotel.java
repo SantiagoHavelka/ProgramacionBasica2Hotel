@@ -180,6 +180,82 @@ public class TestHotel {
 		assertEquals(1, hotel.getHabitaciones().size());
 	}
 	
+	@Test
+    public void queUnClienteQuieraModificarLosDiasDeSuEstadia() {
+		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
+        Cliente cliente = this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
+        Reserva reserva = this.crearReserva(1, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
+        Cliente acompaniante1 = new Cliente("Santiago", "Aquino", 23, 4232749, 2);
+        Cliente acompaniante2 = new Cliente("Luca", "Bernacchia", 23, 43128329, 3);
+        ArrayList<Cliente> acompaniantes = new ArrayList<>();
+        acompaniantes.add(acompaniante1);
+        acompaniantes.add(acompaniante2);
+        hotel.agregarReservaCliente(cliente, reserva, acompaniantes);
+
+        Boolean modificaSuReserva = hotel.modificarReserva(reserva, LocalDate.of(2024, 5, 24), LocalDate.of(2024, 5, 29));
+
+        assertTrue(modificaSuReserva);
+    }
+	
+	@Test
+    public void queUnClienteQuieraModificarUnaReservaYaExistente() {
+		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
+
+        Cliente cliente = this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
+        Reserva reserva = this.crearReserva(1, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
+        Cliente acompaniante1 = this.crearCliente("Santiago", "Aquino", 23, 4232749, 2);
+        Cliente acompaniante2 = this.crearCliente("Luca", "Bernacchia", 23, 43128329, 3);
+        ArrayList<Cliente> acompaniantes = new ArrayList<>();
+        acompaniantes.add(acompaniante1);
+        acompaniantes.add(acompaniante2);
+        hotel.agregarReservaCliente(cliente, reserva, acompaniantes);
+        hotel.modificarReserva(reserva, LocalDate.of(2024, 5, 24), LocalDate.of(2024, 5, 29));
+
+
+        Cliente cliente2 = this.crearCliente("Martin", "de Oro", 23, 43874966, 2);
+        Cliente acompaniante1DelCliente2 = this.crearCliente("Maria", "Gonzalez", 23, 4232745, 3);
+        Cliente acompaniante2DelCliente2 = this.crearCliente("Luz", "Lopez", 23, 43128320, 4);
+        Reserva reserva2 = this.crearReserva(2, estandar, LocalDate.of(2024, 5, 30), LocalDate.of(2024, 6, 3));
+        ArrayList<Cliente> acompaniantesDelSegundoCliente = new ArrayList<>();
+        acompaniantesDelSegundoCliente.add(acompaniante1DelCliente2);
+        acompaniantesDelSegundoCliente.add(acompaniante2DelCliente2);
+        hotel.agregarReservaCliente(cliente2, reserva2, acompaniantesDelSegundoCliente);
+
+        Boolean elSegundoClientePuedeModificarLaReserva = hotel.modificarReserva(reserva2, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 28));
+
+        assertFalse(elSegundoClientePuedeModificarLaReserva);
+    }
+	
+	@Test
+    public void queExistan2ClientesYQueUnoDecidaCancelarSuReserva() {
+		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
+		Habitacion estandar2 = this.crearHabitacionEstandar(37, 3, PRECIO_BASE_HABITACION_POR_DIA, 2, TiposDeCama.INDIVIDUAL, servicio, 5);
+
+        Cliente cliente1 = this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
+        Reserva reserva1 = this.crearReserva(1, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
+        Cliente acompaniante1 = this.crearCliente("Santiago", "Aquino", 23, 4232749, 2);
+        Cliente acompaniante2 = this.crearCliente("Luca", "Bernacchia", 23, 43128329, 3);
+        ArrayList<Cliente> acompaniantes = new ArrayList<>();
+        acompaniantes.add(acompaniante1);
+        acompaniantes.add(acompaniante2);
+        hotel.agregarReservaCliente(cliente1, reserva1, acompaniantes);
+
+        Cliente cliente2 = this.crearCliente("Santiago", "Aquino", 23, 42300890, 2);
+        Cliente acompaniante1DelCliente2 = this.crearCliente("Maria", "Gonzalez", 23, 4232745, 3);
+        Cliente acompaniante2DelCliente2 = this.crearCliente("Luz", "Lopez", 23, 43128320, 4);
+        Reserva reserva2 = this.crearReserva(2, estandar2, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
+        ArrayList<Cliente> acompaniantesDelSegundoCliente = new ArrayList<>();
+        acompaniantesDelSegundoCliente.add(acompaniante1DelCliente2);
+        acompaniantesDelSegundoCliente.add(acompaniante2DelCliente2);
+        hotel.agregarReservaCliente(cliente2, reserva2, acompaniantesDelSegundoCliente);
+
+        Boolean elCliente2PudoCancelarSuReserva = hotel.cancelarReserva(cliente2, reserva2,
+                acompaniantesDelSegundoCliente);
+
+        assertTrue(elCliente2PudoCancelarSuReserva);
+        assertEquals(1, hotel.getReservasClientes().size());
+    }
+	
 	
 	
 	

@@ -17,6 +17,10 @@ public class Cliente {
 		this.id= id;
 	}
 
+	public Integer getId() {
+		return id;
+	}
+	
 
 	
 
