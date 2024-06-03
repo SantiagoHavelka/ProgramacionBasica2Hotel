@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 public class Hotel implements HotelInterface {
 	
 	private String nombre;
@@ -51,6 +52,7 @@ public class Hotel implements HotelInterface {
 		ReservaCliente reservaCliente = new ReservaCliente(reserva, cliente, acompaniantes);
 		return this.reservasClientes.add(reservaCliente);
 	}
+	
 
 	public List<ReservaCliente> getReservasClientes() {
 		return reservasClientes;
