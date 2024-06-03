@@ -132,8 +132,8 @@ public class TestHotel {
 		Reserva reserva = this.crearReserva(2, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
 
 		Cliente cliente = new Cliente("Julieta", "Bernacchia", 21, 44511167, 1);
-		Cliente acompaniante1 = new Cliente("Santiago", "Aquino", 23, 4232749, 2);
-		Cliente acompaniante2 = new Cliente("Luca", "Bernacchia", 23, 43128329, 3);
+		Cliente acompaniante1 = new Cliente("Santiago", "Aquino", 23, 42675483, 2);
+		Cliente acompaniante2 = new Cliente("Luca", "Bernacchia", 23, 43309999, 3);
 		ArrayList<Cliente> acompaniantes = new ArrayList<>();
 		acompaniantes.add(acompaniante1);
 		acompaniantes.add(acompaniante2);
