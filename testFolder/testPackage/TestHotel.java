@@ -28,6 +28,7 @@ public class TestHotel {
 	public void queHayaUnServicioParaBrindar() {
 	assertNotNull(this.servicio);
 }
+	
 
 
 }
