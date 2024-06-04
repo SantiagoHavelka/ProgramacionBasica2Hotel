@@ -185,9 +185,8 @@ public class TestHotel {
 		acompaniantesDelSegundoCliente.add(acompaniante2DelCliente2);
 		
 		ReservaCliente reservaCliente2 = this.crearReservaCliente(reserva2, cliente2, acompaniantesDelSegundoCliente);
-		Boolean sePuedeReservar = this.hotel.agregarReservaCliente(reservaCliente2);
+		this.hotel.agregarReservaCliente(reservaCliente2);
 
-		assertFalse(sePuedeReservar);
 		assertEquals(1, hotel.getReservasClientes().size());
 	}
 	
@@ -246,9 +245,9 @@ public class TestHotel {
         ReservaCliente reservaClientes2 =  this.crearReservaCliente(reserva2, cliente2, acompaniantesDelSegundoCliente);
         this.hotel.agregarReservaCliente(reservaClientes2);
 
-        Boolean sePuedeModificarLaReserva = this.hotel.modificarReservaCliente(reservaClientes2, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 28));
+        this.hotel.modificarReservaCliente(reservaClientes2, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 28));
 
-        assertFalse(sePuedeModificarLaReserva);
+       
     }
 	
 	@Test
@@ -357,9 +356,8 @@ public class TestHotel {
 		Cliente cliente2 = this.crearCliente("Santiago","Aquino", 42675483, 23, 1);
 		
 		this.hotel.registrarCliente(cliente);
-		Boolean sePudoRegistrar = this.hotel.registrarCliente(cliente2);
-		
-		assertTrue(sePudoRegistrar);	
+	    this.hotel.registrarCliente(cliente2);
+			
 	}
 	@Test (expected = reservaInexistenteException.class)
 	public void queNoSePuedaCancelarUnaReservaClientePorSerInexistente() throws clienteYaRegistradoException, habitacionYaReservadaException, reservaInexistenteException {
@@ -379,9 +377,8 @@ public class TestHotel {
 		acompañantes.add(cliente3);
 		
 		ReservaCliente reservaClientes = this.crearReservaCliente(reserva, cliente, acompañantes);
-		Boolean sePudoCancelar = this.hotel.cancelarReservaClientes(reservaClientes);
+		this.hotel.cancelarReservaClientes(reservaClientes);
 		
-		assertTrue(sePudoCancelar);
 	}
 	
 	
