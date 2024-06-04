@@ -1,6 +1,7 @@
 package clasesHotel;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +23,15 @@ public class Hotel implements HotelInterface {
 	}
 	
 	@Override
-	public Boolean registrarCliente(Cliente cliente) {
-			return this.clientes.add(cliente);
+	public Boolean registrarCliente(Cliente cliente) throws clienteYaRegistradoException {
+		Boolean sePudoRegistrar = false;
+			for(Cliente clientes : this.clientes) {
+				if(clientes.getId().equals(cliente.getId())) {
+					throw new clienteYaRegistradoException("El cliente ya esta registrado");
+				}
+			}
+			sePudoRegistrar = this.clientes.add(cliente);
+			return sePudoRegistrar;		
 	}
 	
 	@Override
@@ -37,58 +45,62 @@ public class Hotel implements HotelInterface {
 	}
 	
 	@Override
-	public Boolean agregarReservaCliente(Cliente cliente, Reserva reserva, List<Cliente> acompaniantes) {
-		LocalDate fechaLlegada = reserva.getDiaLlegada();
-		LocalDate fechaSalida = reserva.getDiaSalida();
-
-		for (ReservaCliente rc : this.reservasClientes) {
-			if (rc.getReserva().getHabitacion().getNumeroHabitacion()
-					.equals(reserva.getHabitacion().getNumeroHabitacion())
-					&& fechaLlegada.isBefore(rc.getReserva().getDiaSalida())
-					&& fechaSalida.isAfter(rc.getReserva().getDiaLlegada()) || fechaLlegada.equals(rc.getReserva().getDiaSalida())
-	                || fechaSalida.equals(rc.getReserva().getDiaLlegada())) {
-				return false;
-			}
+	public Boolean agregarReservaCliente(ReservaCliente reservaClientes) throws habitacionYaReservadaException {
+		Boolean sePudoAgregar = false;
+		for(ReservaCliente rc : this.reservasClientes) {
+				if(rc.getReserva().getHabitacion().getNumeroHabitacion().equals(reservaClientes.getReserva().getHabitacion().getNumeroHabitacion())
+						&& rc.getReserva().getDiaLlegada().isBefore(reservaClientes.getReserva().getDiaSalida()) &&
+						rc.getReserva().getDiaSalida().isAfter(reservaClientes.getReserva().getDiaLlegada())
+						|| rc.getReserva().getDiaLlegada().equals(reservaClientes.getReserva().getDiaSalida())
+						|| rc.getReserva().getDiaSalida().equals(reservaClientes.getReserva().getDiaLlegada())) {
+					throw new habitacionYaReservadaException("La habitacion ya esta reservada en esa fecha");
+				}
 		}
-
-		ReservaCliente reservaCliente = new ReservaCliente(reserva, cliente, acompaniantes);
-		return this.reservasClientes.add(reservaCliente);
+		 sePudoAgregar = this.reservasClientes.add(reservaClientes);
+		return sePudoAgregar;
 	}
 	
 	@Override
-    public Boolean modificarReserva(Reserva reserva, LocalDate nuevaFechaLlegada, LocalDate nuevaFechaSalida) {
-
-
-         for (ReservaCliente rc : reservasClientes) {
-                if (!rc.getReserva().equals(reserva) &&
-                    rc.getReserva().getHabitacion().equals(reserva.getHabitacion()) &&
-                    (nuevaFechaLlegada.isBefore(rc.getReserva().getDiaSalida()) &&
-                     nuevaFechaSalida.isAfter(rc.getReserva().getDiaLlegada()))) {
-                    return false; 
-                }
-            }
-
-            reserva.setDiaLlegada(nuevaFechaLlegada);
-            reserva.setDiaSalida(nuevaFechaSalida);
-            return true;
-    }
+	public Boolean modificarReservaCliente(ReservaCliente reservaClientes, LocalDate diaDeLlegada, LocalDate diaDeSalida) throws habitacionYaReservadaException {
+		Boolean sePudoModificar = false;
+		for(ReservaCliente reservaAModificar: this.reservasClientes) {
+			if(!reservaAModificar.equals(reservaClientes) &&
+					reservaAModificar.getReserva().getHabitacion().getNumeroHabitacion().equals(reservaClientes.getReserva().getHabitacion().getNumeroHabitacion())
+					&& diaDeLlegada.isBefore(reservaAModificar.getReserva().getDiaSalida()) &&
+					diaDeSalida.isAfter(reservaAModificar.getReserva().getDiaLlegada())
+					|| diaDeLlegada.equals(reservaAModificar.getReserva().getDiaSalida())
+					|| diaDeSalida.equals(reservaAModificar.getReserva().getDiaLlegada())) {
+				throw new habitacionYaReservadaException("La habitacion ya esta reservada en esa fecha");
+			}
+		}
+		reservaClientes.getReserva().setDiaLlegada(diaDeLlegada);
+		reservaClientes.getReserva().setDiaSalida(diaDeSalida);
+		sePudoModificar = true;
+		return sePudoModificar;
+	}
 	
 	@Override
-    public Boolean cancelarReserva(Cliente cliente, Reserva reserva, List<Cliente> acompaniantes) {
-
-        for (ReservaCliente rc : this.reservasClientes) {
-            if (rc.getCliente().getId().equals(cliente.getId())
-                    && rc.getReserva().getId().equals(reserva.getId())
-                    && rc.getAcompaniantes().equals(acompaniantes)) {
-                ReservaCliente reservaCliente = new ReservaCliente(reserva, cliente, acompaniantes);
-                this.reservasClientes.remove(reservaCliente);
-                return true;
-            }
-        }
-        return false;
-
-    }
-	
+    public Boolean cancelarReservaClientes(ReservaCliente reservaClientes) throws reservaInexistenteException {
+	Boolean sePudoCancelar = false;
+		
+	ReservaCliente reservaACancelar = this.buscarReservaClientes(reservaClientes);
+		if(reservaACancelar == null) {
+			throw new reservaInexistenteException("La reserva no existe");
+		}
+	      sePudoCancelar = this.reservasClientes.remove(reservaACancelar);
+	      return sePudoCancelar;
+		
+		}
+	@Override
+	public ReservaCliente buscarReservaClientes(ReservaCliente reservaClientes) {
+		ReservaCliente buscada = null;
+		for(ReservaCliente rc: this.reservasClientes) {
+			if(rc.equals(reservaClientes)) {
+				buscada = rc;
+			}
+		}
+		return buscada;
+	}
 	@Override
 	public List<ReservaCliente> getReservasClientes() {
 		return reservasClientes;
@@ -97,6 +109,17 @@ public class Hotel implements HotelInterface {
 	@Override
 	public List<Habitacion> getHabitaciones() {
 		return habitaciones;
+	}
+	@Override
+	public Double obtenerPrecioTotalReserva(ReservaCliente reservaClientes) {
+		Double precioTotalReserva = 0.0;
+		for(ReservaCliente rc : this.reservasClientes) {
+			if(rc.equals(reservaClientes)) {
+			Long cantidadDeDias = ChronoUnit.DAYS.between(rc.getReserva().getDiaLlegada(), rc.getReserva().getDiaSalida());
+			precioTotalReserva =rc.getReserva().getHabitacion().saberValor() * cantidadDeDias;
+			}
+		}
+		return precioTotalReserva;
 	}
 
 	

@@ -1,5 +1,7 @@
 package clasesHotel;
 
+
+
 public class Cliente {
 	
 
@@ -20,6 +22,11 @@ public class Cliente {
 	public Integer getId() {
 		return id;
 	}
+	
+
+	
+	
+	
 	
 
 	

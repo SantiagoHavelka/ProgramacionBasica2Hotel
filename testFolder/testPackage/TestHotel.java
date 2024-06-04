@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+
+import clasesHotel.AdicionalesVip;
 import clasesHotel.Cliente;
 import clasesHotel.HabitacionEstandar;
 import clasesHotel.HabitacionVip;
@@ -16,6 +18,9 @@ import clasesHotel.ReservaCliente;
 import clasesHotel.Servicio;
 import clasesHotel.ServicioVip;
 import clasesHotel.TiposDeCama;
+import clasesHotel.clienteYaRegistradoException;
+import clasesHotel.habitacionYaReservadaException;
+import clasesHotel.reservaInexistenteException;
 import clasesHotel.Habitacion;
 import clasesHotel.HabitacionEconomica;
 
@@ -34,7 +39,7 @@ public class TestHotel {
 	}
 
 	@Test
-	public void queSePuedaRegistrarUnClienteAlHotel() {
+	public void queSePuedaRegistrarUnClienteAlHotel() throws clienteYaRegistradoException {
 		Cliente cliente = this.crearCliente("Santiago", "Aquino", 42675483, 23, 1);
 
 		Boolean sePudoRegistrar = this.hotel.registrarCliente(cliente);
@@ -119,7 +124,7 @@ public class TestHotel {
 		Double porcentajePrecioASumar = 0.4;
 		Habitacion habitacion = this.crearHabitacionVip(66, 4, PRECIO_BASE_HABITACION_POR_DIA, 3, TiposDeCama.KING_SIZE,this.servicioVip, 8, porcentajePrecioASumar);
 		
-		hotel.agregarHabitacion(habitacion);
+		this.hotel.agregarHabitacion(habitacion);
 		Double valorDeHabitacion = habitacion.saberValor();
 		Double valorDeHabitacionEsperado = 3500.0;
 		
@@ -127,11 +132,12 @@ public class TestHotel {
 	}
 	
 	@Test
-	public void queSePuedaAgregarUnaReservaClienteAlHotel() {
-		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
+	public void queSePuedaAgregarUnaReservaClienteAlHotel() throws habitacionYaReservadaException, clienteYaRegistradoException {
+		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, this.servicio, 5);
 		Reserva reserva = this.crearReserva(2, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
 
 		Cliente cliente = this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
+		this.hotel.registrarCliente(cliente);
 		Cliente acompaniante1 = this.crearCliente("Santiago", "Aquino", 23, 42675483, 2);
 		Cliente acompaniante2 =  this.crearCliente("Luca", "Bernacchia", 23, 43309999, 3);
 		
@@ -141,19 +147,21 @@ public class TestHotel {
 			
 		ReservaCliente reservaCliente = this.crearReservaCliente(reserva, cliente, acompaniantes);
 		
-		Boolean sePudoAgregarReservaClienteAlHotel = hotel.agregarReservaCliente(cliente, reserva, acompaniantes);
+		Boolean sePudoAgregarReservaClienteAlHotel = this.hotel.agregarReservaCliente(reservaCliente);
 		
 		assertTrue(sePudoAgregarReservaClienteAlHotel);
 		assertEquals(2, reservaCliente.getAcompaniantes().size());
 		
 	}
 	
-	@Test
-	public void queUnClienteNoPuedaReservarUnaHabitacionYaReservadaPorOtroClienteEnEsasFechas() {
-		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
-		hotel.agregarHabitacion(estandar);
+	@Test (expected = habitacionYaReservadaException.class)
+	public void queUnClienteNoPuedaReservarUnaHabitacionYaReservadaPorOtroClienteEnEsasFechas() throws habitacionYaReservadaException, clienteYaRegistradoException {
+		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, this.servicio, 5);
+		this.hotel.agregarHabitacion(estandar);
 
 		Cliente cliente1 =  this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
+		this.hotel.registrarCliente(cliente1);
+		
 		Reserva reserva1 = this.crearReserva(1, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
 		Cliente acompaniante1 =  this.crearCliente("Santiago", "Aquino", 23, 42675483, 2);
 		Cliente acompaniante2 =  this.crearCliente("Luca", "Bernacchia", 23, 43309999, 3);
@@ -162,9 +170,12 @@ public class TestHotel {
 		acompaniantes.add(acompaniante1);
 		acompaniantes.add(acompaniante2);
 		
-		hotel.agregarReservaCliente(cliente1, reserva1, acompaniantes);
+		ReservaCliente reservaCliente = this.crearReservaCliente(reserva1, cliente1, acompaniantes);
+		this.hotel.agregarReservaCliente(reservaCliente);
 
 		Cliente cliente2 =  this.crearCliente("Pedro", "Gomez", 23, 41675483, 2);
+		this.hotel.registrarCliente(cliente2);
+		
 		Cliente acompaniante1DelCliente2 =  this.crearCliente("Maria", "Gonzalez", 25, 42327456, 3);
 		Cliente acompaniante2DelCliente2 =  this.crearCliente("Lucia", "Fernandez", 23, 43128320, 4);
 		Reserva reserva2 = this.crearReserva(2, estandar, LocalDate.of(2024, 5, 30), LocalDate.of(2024, 6, 3));
@@ -172,18 +183,20 @@ public class TestHotel {
 		ArrayList<Cliente> acompaniantesDelSegundoCliente = new ArrayList<>();
 		acompaniantesDelSegundoCliente.add(acompaniante1DelCliente2);
 		acompaniantesDelSegundoCliente.add(acompaniante2DelCliente2);
+		
+		ReservaCliente reservaCliente2 = this.crearReservaCliente(reserva2, cliente2, acompaniantesDelSegundoCliente);
+		Boolean sePuedeReservar = this.hotel.agregarReservaCliente(reservaCliente2);
 
-		Boolean seAgregaElSegundoClienteALaMismaReserva = hotel.agregarReservaCliente(cliente2, reserva2,
-				acompaniantesDelSegundoCliente);
-
-		assertFalse(seAgregaElSegundoClienteALaMismaReserva);
+		assertFalse(sePuedeReservar);
 		assertEquals(1, hotel.getReservasClientes().size());
 	}
 	
 	@Test
-    public void queUnClientePuedaModificarLosDiasDeSuReserva() {
-		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
+    public void queUnClientePuedaModificarLosDiasDeSuReserva() throws clienteYaRegistradoException, habitacionYaReservadaException {
+		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, this.servicio, 5);
         Cliente cliente = this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
+        this.hotel.registrarCliente(cliente);
+        
         Reserva reserva = this.crearReserva(1, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
         Cliente acompaniante1 = new Cliente("Santiago", "Aquino", 23, 4232749, 2);
         Cliente acompaniante2 = new Cliente("Luca", "Bernacchia", 23, 43128329, 3);
@@ -191,19 +204,22 @@ public class TestHotel {
         ArrayList<Cliente> acompaniantes = new ArrayList<>();
         acompaniantes.add(acompaniante1);
         acompaniantes.add(acompaniante2);
-        hotel.agregarReservaCliente(cliente, reserva, acompaniantes);
+        
+       ReservaCliente reservaCliente =  this.crearReservaCliente(reserva, cliente, acompaniantes);
+       this.hotel.agregarReservaCliente(reservaCliente);
 
-        Boolean sePuedemodificaSuReserva = hotel.modificarReserva(reserva, LocalDate.of(2024, 5, 24), LocalDate.of(2024, 5, 29));
+        Boolean sePuedemodificarSuReserva = this.hotel.modificarReservaCliente(reservaCliente,LocalDate.of(2024, 5, 24), LocalDate.of(2024, 5, 29));
 
-        assertTrue(sePuedemodificaSuReserva);
+        assertTrue(sePuedemodificarSuReserva);
     }
 	
-	@Test
-    public void queUnClienteNoPuedaModificarSusDiasDeLaReservaPorYaEstarOcupadaEsaHabitacionEnEsosDias() {
+	@Test (expected = habitacionYaReservadaException.class)
+    public void queUnClienteNoPuedaModificarSusDiasDeLaReservaPorYaEstarOcupadaEsaHabitacionEnEsosDias() throws habitacionYaReservadaException, clienteYaRegistradoException {
 		
 		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
 
         Cliente cliente = this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
+        this.hotel.registrarCliente(cliente);
         Reserva reserva = this.crearReserva(1, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
         Cliente acompaniante1 = this.crearCliente("Santiago", "Aquino", 23, 4232749, 2);
         Cliente acompaniante2 = this.crearCliente("Luca", "Bernacchia", 23, 43128329, 3);
@@ -211,47 +227,125 @@ public class TestHotel {
         ArrayList<Cliente> acompaniantes = new ArrayList<>();
         acompaniantes.add(acompaniante1);
         acompaniantes.add(acompaniante2);
-        hotel.agregarReservaCliente(cliente, reserva, acompaniantes);
-        hotel.modificarReserva(reserva, LocalDate.of(2024, 5, 24), LocalDate.of(2024, 5, 29));
-
+        
+        ReservaCliente reservaClientes = this.crearReservaCliente(reserva, cliente, acompaniantes);
+        this.hotel.agregarReservaCliente(reservaClientes);
 
         Cliente cliente2 = this.crearCliente("Martin", "de Oro", 23, 43874966, 2);
+        this.hotel.registrarCliente(cliente2);
+        
         Cliente acompaniante1DelCliente2 = this.crearCliente("Maria", "Gonzalez", 23, 4232745, 3);
         Cliente acompaniante2DelCliente2 = this.crearCliente("Luz", "Lopez", 23, 43128320, 4);
-        Reserva reserva2 = this.crearReserva(2, estandar, LocalDate.of(2024, 5, 30), LocalDate.of(2024, 6, 3))
-        		;
+        Reserva reserva2 = this.crearReserva(2, estandar, LocalDate.of(2024, 5, 31), LocalDate.of(2024, 6, 3));
+        
         ArrayList<Cliente> acompaniantesDelSegundoCliente = new ArrayList<>();
         acompaniantesDelSegundoCliente.add(acompaniante1DelCliente2);
         acompaniantesDelSegundoCliente.add(acompaniante2DelCliente2);
         
-        hotel.agregarReservaCliente(cliente2, reserva2, acompaniantesDelSegundoCliente);
+        
+        ReservaCliente reservaClientes2 =  this.crearReservaCliente(reserva2, cliente2, acompaniantesDelSegundoCliente);
+        this.hotel.agregarReservaCliente(reservaClientes2);
 
-        Boolean elSegundoClientePuedeModificarLaReserva = hotel.modificarReserva(reserva2, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 28));
+        Boolean sePuedeModificarLaReserva = this.hotel.modificarReservaCliente(reservaClientes2, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 28));
 
-        assertFalse(elSegundoClientePuedeModificarLaReserva);
+        assertFalse(sePuedeModificarLaReserva);
     }
 	
 	@Test
-    public void queSePuedaCancelarUnaReserva() {
+    public void queSePuedaCancelarUnaReserva() throws reservaInexistenteException, habitacionYaReservadaException, clienteYaRegistradoException {
 		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
 
-        Cliente cliente = this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
         Reserva reserva = this.crearReserva(1, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
+        Cliente cliente = this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
+        this.hotel.registrarCliente(cliente);
         Cliente acompaniante1 = this.crearCliente("Santiago", "Aquino", 23, 4232749, 2);
         Cliente acompaniante2 = this.crearCliente("Luca", "Bernacchia", 23, 43128329, 3);
         
         ArrayList<Cliente> acompaniantes = new ArrayList<>();
         acompaniantes.add(acompaniante1);
         acompaniantes.add(acompaniante2);
-        hotel.agregarReservaCliente(cliente, reserva, acompaniantes);
+        
+        ReservaCliente reservaCliente = crearReservaCliente(reserva, cliente, acompaniantes);
+        this.hotel.agregarReservaCliente(reservaCliente);
 
-        Boolean sePuedeCancelar = hotel.cancelarReserva(cliente, reserva,
-        		acompaniantes);
+        Boolean sePuedeCancelar = this.hotel.cancelarReservaClientes(reservaCliente);
 
         assertTrue(sePuedeCancelar);
         assertEquals(0, hotel.getReservasClientes().size());
     }
-	
+	@Test
+	public void queSePuedaObtenerElPrecioTotalDeUnaReservaClientePorLaCantidadDeDiasDeSuEstadia() throws clienteYaRegistradoException, habitacionYaReservadaException{
+		Habitacion habitacion = this.crearHabitacionEstandar(33, 5, PRECIO_BASE_HABITACION_POR_DIA, 2,  TiposDeCama.INDIVIDUAL,this.servicio , 5);
+		this.hotel.agregarHabitacion(habitacion);
+		
+		Reserva reserva = this.crearReserva(2, habitacion, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
+		this.hotel.generarReserva(reserva);
+		
+		Cliente cliente = new Cliente("Santiago","Aquino", 42675483, 23, 1);
+		Cliente cliente2 = new Cliente("Juan","Perez", 42672223, 22, 2);
+		Cliente cliente3 = new Cliente("Lucas","Aquino", 41565483, 33, 3);
+		this.hotel.registrarCliente(cliente);
+		
+		List<Cliente>acompaniantes = new ArrayList<>();
+		acompaniantes.add(cliente2);
+		acompaniantes.add(cliente3);
+		
+		ReservaCliente reservaClientes = this.crearReservaCliente(reserva, cliente, acompaniantes);
+		this.hotel.agregarReservaCliente(reservaClientes);
+		
+		Double precioTotalReserva = this.hotel.obtenerPrecioTotalReserva(reservaClientes);
+		Double precioEsperado = 20000.0;
+		
+		assertEquals(precioEsperado,precioTotalReserva );
+	}
+	@Test
+	public void queSePuedaObtenerElPrecioTotalDeUnaReservaClienteDeHabitacionVip() throws clienteYaRegistradoException, habitacionYaReservadaException{
+		Double porcentajePrecioASumar = 0.4;
+		Habitacion habitacion = new HabitacionVip(33, 5, PRECIO_BASE_HABITACION_POR_DIA, 2, TiposDeCama.KING_SIZE,this.servicioVip , 5, porcentajePrecioASumar);
+		this.hotel.agregarHabitacion(habitacion);
+		
+		Reserva reserva = new Reserva(2, habitacion, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
+		this.hotel.generarReserva(reserva);
+		
+		Cliente cliente = new Cliente("Santiago","Aquino", 42675483, 23, 1);
+		Cliente cliente2 = new Cliente("Juan","Perez", 42672223, 22, 2);
+		Cliente cliente3 = new Cliente("Lucas","Aquino", 41565483, 33, 3);
+		this.hotel.registrarCliente(cliente);
+		
+		List<Cliente>acompañantes = new ArrayList<>();
+		acompañantes.add(cliente2);
+		acompañantes.add(cliente3);
+		
+		ReservaCliente reservaClientes = this.crearReservaCliente(reserva,cliente, acompañantes);
+		this.hotel.agregarReservaCliente(reservaClientes);
+		
+		Double precioTotalReserva = this.hotel.obtenerPrecioTotalReserva(reservaClientes);
+		Double precioEsperado = 28000.0;
+		
+		assertEquals(precioEsperado,precioTotalReserva );
+	}
+	@Test
+	public void queSePuedaSaberCuantosAdicionalesTieneUnaHabitacionVip(){
+		Double porcentajePrecioASumar = 0.4;
+		HabitacionVip habitacion = new HabitacionVip(33, 5, PRECIO_BASE_HABITACION_POR_DIA, 2, TiposDeCama.KING_SIZE,this.servicioVip , 5, porcentajePrecioASumar);
+		this.hotel.agregarHabitacion(habitacion);
+		
+		AdicionalesVip[]adicionalesVip = habitacion.obtenerAdicionales();
+		int cantidadAdicionalesEsperada = 5;
+		
+		assertEquals(cantidadAdicionalesEsperada, adicionalesVip.length);
+	}
+	@Test (expected = clienteYaRegistradoException.class)
+	public void queNoSePuedaRegistrarUnIndividuoYaRegistradoEnElHotel() throws clienteYaRegistradoException{
+		
+		Cliente cliente = this.crearCliente("Santiago","Aquino", 42675483, 23, 1);
+		Cliente cliente2 = this.crearCliente("Santiago","Aquino", 42675483, 23, 1);
+		
+		this.hotel.registrarCliente(cliente);
+		Boolean sePudoRegistrar = this.hotel.registrarCliente(cliente2);
+		
+		assertTrue(sePudoRegistrar);	
+	}
 	
 	
 	
