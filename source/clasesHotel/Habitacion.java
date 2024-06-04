@@ -62,6 +62,8 @@ public abstract class Habitacion {
 				&& Objects.equals(precioBase, other.precioBase) && Objects.equals(servicio, other.servicio)
 				&& tiposDeCama == other.tiposDeCama;
 	}
+
+	
 	
 
 

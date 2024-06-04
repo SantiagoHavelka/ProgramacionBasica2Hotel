@@ -252,9 +252,10 @@ public class TestHotel {
     }
 	
 	@Test
-    public void queSePuedaCancelarUnaReserva() throws reservaInexistenteException, habitacionYaReservadaException, clienteYaRegistradoException {
+    public void queHayaDosClientesYUnoDeEllosDecidaCancelarSuReservaExitosamente() throws reservaInexistenteException, habitacionYaReservadaException, clienteYaRegistradoException {
 		Habitacion estandar = this.crearHabitacionEstandar(36, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
-
+		Habitacion estandar2 = this.crearHabitacionEstandar(37, 2, PRECIO_BASE_HABITACION_POR_DIA, 1, TiposDeCama.INDIVIDUAL, servicio, 5);
+		
         Reserva reserva = this.crearReserva(1, estandar, LocalDate.of(2024, 5, 22), LocalDate.of(2024, 5, 30));
         Cliente cliente = this.crearCliente("Julieta", "Bernacchia", 21, 44511167, 1);
         this.hotel.registrarCliente(cliente);
@@ -267,11 +268,25 @@ public class TestHotel {
         
         ReservaCliente reservaCliente = crearReservaCliente(reserva, cliente, acompaniantes);
         this.hotel.agregarReservaCliente(reservaCliente);
+        
+        Reserva reserva2 = this.crearReserva(4, estandar2, LocalDate.of(2024, 5, 23) , LocalDate.of(2024, 5, 30));
+        Cliente cliente2 = this.crearCliente("Maria", "Gonzalez", 44510908, 21, 5);
+        this.hotel.registrarCliente(cliente2);
+        
+        Cliente acompaniante3 = this.crearCliente("Martin", "De Oro", 43874966 , 22 , 6);
+        Cliente acompaniante4 = this.crearCliente("Pedro", "Aquino", 42503455, 23, 7);
+        
+        ArrayList<Cliente> acompaniantesDelCliente2 = new ArrayList<>();
+        acompaniantesDelCliente2.add(acompaniante3);
+        acompaniantesDelCliente2.add(acompaniante4);
+        
+        ReservaCliente reservaCliente2 = this.crearReservaCliente(reserva2, cliente2, acompaniantesDelCliente2);
+        this.hotel.agregarReservaCliente(reservaCliente2);
 
         Boolean sePuedeCancelar = this.hotel.cancelarReservaClientes(reservaCliente);
 
         assertTrue(sePuedeCancelar);
-        assertEquals(0, hotel.getReservasClientes().size());
+        assertEquals(1, hotel.getReservasClientes().size());
     }
 	@Test
 	public void queSePuedaObtenerElPrecioTotalDeUnaReservaClientePorLaCantidadDeDiasDeSuEstadia() throws clienteYaRegistradoException, habitacionYaReservadaException{

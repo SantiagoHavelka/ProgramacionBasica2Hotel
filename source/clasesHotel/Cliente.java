@@ -1,6 +1,6 @@
 package clasesHotel;
 
-
+import java.util.Objects;
 
 public class Cliente {
 	
@@ -21,6 +21,25 @@ public class Cliente {
 
 	public Integer getId() {
 		return id;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(apellido, dni, edad, id, nombre);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Cliente other = (Cliente) obj;
+		return Objects.equals(apellido, other.apellido) && Objects.equals(dni, other.dni)
+				&& Objects.equals(edad, other.edad) && Objects.equals(id, other.id)
+				&& Objects.equals(nombre, other.nombre);
 	}
 	
 
