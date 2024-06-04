@@ -381,9 +381,6 @@ public class TestHotel {
 		
 	}
 	
-	
-	
-	
 	private Reserva crearReserva(Integer id, Habitacion habitacion,LocalDate diaLlegada, 
 			LocalDate diaSalida) {
 		return new Reserva(id, habitacion, diaLlegada, diaSalida);

@@ -102,15 +102,6 @@ public class Hotel implements HotelInterface {
 		return buscada;
 	}
 	@Override
-	public List<ReservaCliente> getReservasClientes() {
-		return reservasClientes;
-	}
-	
-	@Override
-	public List<Habitacion> getHabitaciones() {
-		return habitaciones;
-	}
-	@Override
 	public Double obtenerPrecioTotalReserva(ReservaCliente reservaClientes) {
 		Double precioTotalReserva = 0.0;
 		for(ReservaCliente rc : this.reservasClientes) {
@@ -121,9 +112,13 @@ public class Hotel implements HotelInterface {
 		}
 		return precioTotalReserva;
 	}
-
+	@Override
+	public List<ReservaCliente> getReservasClientes() {
+		return this.reservasClientes;
+	}
 	
-	
-	
-
+	@Override
+	public List<Habitacion> getHabitaciones() {
+		return this.habitaciones;
+	}
 }
