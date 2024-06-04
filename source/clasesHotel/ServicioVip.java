@@ -12,30 +12,5 @@ public class ServicioVip extends Servicio {
 		this.lavanderiaYtintoreria = lavanderiaYTintoreria;
 		this.transporte = transporte;
 	}
-	
-
-	public String getSpaYbienestar() {
-		return spaYbienestar;
-	}
-
-	public void setSpaYbienestar(String spaYbienestar) {
-		this.spaYbienestar = spaYbienestar;
-	}
-
-	public String getLavanderiaYtintoreria() {
-		return lavanderiaYtintoreria;
-	}
-
-	public void setLavanderiaYtintoreria(String lavanderiaYtintoreria) {
-		this.lavanderiaYtintoreria = lavanderiaYtintoreria;
-	}
-
-	public String getTransporte() {
-		return transporte;
-	}
-
-	public void setTransporte(String transporte) {
-		this.transporte = transporte;
-	}
 
 }

@@ -29,15 +29,8 @@ public abstract class Habitacion {
 
 	public abstract Double saberValor();
 		
-	
-
 	public Integer getNumeroHabitacion() {
 		return numeroDeHabitacion;
-	}
-
-
-	public Integer getCapacidadMaximaPersonas() {
-		return capacidadMaximaPersonas;
 	}
 
 	@Override
